@@ -24,13 +24,15 @@ class VisitorCookie(object):
         params = {
             'a': 'incarnate',
             't': need['data']['tid'],
-            'w': 3 if (need['data']['new_tid'] == True) else 2,
+            'w': 3 if (need['data']['new_tid']) else 2,
             'c': need['data']['confidence'] if ('confidence' in need['data'].keys()) else 100,
             'cb': 'cross_domain',
             'from': 'weibo'
         }
         res = requests.get('https://passport.weibo.com/visitor/visitor', params)
-        need = self.parse_reponse_text(res.text)
+        text = res.text
+        text = text.replace('"sub":null', '"sub":\'\'')
+        need = self.parse_reponse_text(text)
         return {'SUB': need['data']['sub'], 'SUBP': need['data']['subp']}
 
     def parse_reponse_text(self, text):
