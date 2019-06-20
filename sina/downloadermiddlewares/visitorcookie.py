@@ -33,6 +33,8 @@ class VisitorCookie(object):
         text = res.text
         text = text.replace('"sub":null', '"sub":\'\'')
         need = self.parse_reponse_text(text)
+        if need['data']['sub'] == '':
+            need['data']['sub'] = None
         return {'SUB': need['data']['sub'], 'SUBP': need['data']['subp']}
 
     def parse_reponse_text(self, text):
