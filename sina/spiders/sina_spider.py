@@ -14,6 +14,9 @@ class SinaSpider(scrapy.Spider):
 
     def parse(self, response):
         soup = BeautifulSoup(response.body, "html.parser")
+        # 如果爬取的页面格式不正确返回DateItem空对象
+        if soup.body.find(class_="main_editor") is None:
+            return None
         title = soup.body.find(class_="main_editor").find(class_="title").string.strip()
         publish_time = soup.body.find(class_="main_editor").find(class_="time").string.strip()
         publish_time = re.sub(r'[\u4e00-\u9fa5]', '', publish_time).strip()
@@ -27,7 +30,10 @@ class SinaSpider(scrapy.Spider):
         comment_num = li_list[1].find(class_="pos").span.string.strip()
         # 格式为评论 6
         comment_num = comment_num[2:].strip()
-        like_num = li_list[2].find(class_="pos").span.span.em.string.strip()
+        if li_list[2].find(class_="pos").span.span.em.string is None:
+            like_num = ''
+        else:
+            like_num = li_list[2].find(class_="pos").span.span.em.string.strip()
         item = SinaItem()
         item['title'] = title
         item['publish_time'] = publish_time
